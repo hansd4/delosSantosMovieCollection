@@ -220,7 +220,7 @@ public class MovieCollection {
         people.add(actor);
       }
     }
-
+// test
     for (int i = 0; i < people.size(); i++) {
       System.out.println((i+1) + ". " + capitalize(people.get(i)));
     }
