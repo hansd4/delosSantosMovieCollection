@@ -7,7 +7,6 @@
     <list default="true" id="54184035-4300-4faa-b20b-594135271705" name="Changes" comment="halfway with cast">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/MovieCollection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MovieCollection.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/MovieCollectionRunner.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/MovieCollectionRunner.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />

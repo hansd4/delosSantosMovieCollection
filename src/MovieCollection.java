@@ -9,8 +9,6 @@ public class MovieCollection {
   private ArrayList<Movie> movies;
   private final ArrayList<String> ACTORS;
   private final ArrayList<String> GENRES;
-  private final ArrayList<Movie> HIGHEST_RATED;
-  private final ArrayList<Movie> HIGHEST_REVENUE;
   private Scanner scanner;
 
   public MovieCollection(String fileName) {
@@ -127,6 +125,19 @@ public class MovieCollection {
     listMovies(results);
   }
 
+  private void sortStrings(ArrayList<String> listToSort) {
+    for (int j = 1; j < listToSort.size(); j++) {
+      String temp = listToSort.get(j);
+
+      int possibleIndex = j;
+      while (possibleIndex > 0 && temp.compareTo(listToSort.get(possibleIndex - 1)) < 0) {
+        listToSort.set(possibleIndex, listToSort.get(possibleIndex - 1));
+        possibleIndex--;
+      }
+      listToSort.set(possibleIndex, temp);
+    }
+  }
+
   private void sortResults(ArrayList<Movie> listToSort) {
     for (int j = 1; j < listToSort.size(); j++) {
       Movie temp = listToSort.get(j);
@@ -141,12 +152,13 @@ public class MovieCollection {
     }
   }
 
-  private void sortStrings(ArrayList<String> listToSort) {
+  private void sortMoviesByRevenue(ArrayList<Movie> listToSort) {
     for (int j = 1; j < listToSort.size(); j++) {
-      String temp = listToSort.get(j);
+      Movie temp = listToSort.get(j);
+      int tempRevenue = temp.getRevenue();
 
       int possibleIndex = j;
-      while (possibleIndex > 0 && temp.compareTo(listToSort.get(possibleIndex - 1)) < 0) {
+      while (possibleIndex > 0 && tempRevenue - listToSort.get(possibleIndex - 1).getRevenue() > 0) {
         listToSort.set(possibleIndex, listToSort.get(possibleIndex - 1));
         possibleIndex--;
       }
@@ -154,29 +166,17 @@ public class MovieCollection {
     }
   }
 
-  private void sortMoviesbyRevenue(ArrayList<Movie> listToSort) {
+  private void sortMoviesByRating(ArrayList<Movie> listToSort) {
     for (int j = 1; j < listToSort.size(); j++) {
-      int temp = listToSort.get(j).getRevenue();
+      Movie temp = listToSort.get(j);
+      double tempRating = temp.getUserRating();
 
       int possibleIndex = j;
-      while (possibleIndex > 0 && temp - listToSort.get(possibleIndex - 1).getRevenue() < 0) {
+      while (possibleIndex > 0 && tempRating - listToSort.get(possibleIndex - 1).getUserRating() > 0) {
         listToSort.set(possibleIndex, listToSort.get(possibleIndex - 1));
         possibleIndex--;
       }
-      listToSort.set(possibleIndex, listToSort.get(j));
-    }
-  }
-
-  private void sortMoviesbyRating(ArrayList<Movie> listToSort) {
-    for (int j = 1; j < listToSort.size(); j++) {
-      double temp = listToSort.get(j).getUserRating();
-
-      int possibleIndex = j;
-      while (possibleIndex > 0 && temp - listToSort.get(possibleIndex - 1).getUserRating() < 0) {
-        listToSort.set(possibleIndex, listToSort.get(possibleIndex - 1));
-        possibleIndex--;
-      }
-      listToSort.set(possibleIndex, listToSort.get(j));
+      listToSort.set(possibleIndex, temp);
     }
   }
   
@@ -287,17 +287,55 @@ public class MovieCollection {
   }
   
   private void listHighestRated() {
-    /* TASK 6: IMPLEMENT ME */
+    listHighest("rating");
   }
   
   private void listHighestRevenue() {
-    /* TASK 6: IMPLEMENT ME */
+    listHighest("revenue");
   }
 
+  private void listHighest(String category) {
+    ArrayList<Movie> results = top50(category);
+    listMovies(results, category);
+  }
+
+  private void listMovies(ArrayList<Movie> results, String category) {
+    if (results.size() > 0) {
+      // display them all to the user
+      for (int i = 0; i < results.size(); i++) {
+        String title = results.get(i).getTitle();
+
+        // this will print index 0 as choice 1 in the results list; better for user!
+        int choiceNum = i + 1;
+        // will print rating or revenue depending on category argument
+        String info = switch (category) {
+          case "rating" -> Double.toString(results.get(i).getUserRating());
+          case "revenue" -> Integer.toString(results.get(i).getRevenue());
+          default -> null;
+        };
+        System.out.println("" + choiceNum + ". " + title + ": " + info);
+      }
+
+      System.out.println("Which movie would you like to learn more about?");
+      System.out.print("Enter number: ");
+      int choice = scanner.nextInt();
+      scanner.nextLine();
+      Movie selectedMovie = results.get(choice - 1);
+      displayMovieInfo(selectedMovie);
+      System.out.println("\n ** Press Enter to Return to Main Menu **");
+      scanner.nextLine();
+    } else {
+      System.out.println("\nNo movie titles match that search term!");
+      System.out.println("** Press Enter to Return to Main Menu **");
+      scanner.nextLine();
+    }
+  }
+
+  // overloaded method, sort by alphabet if no category for sorting is provided
   private void listMovies(ArrayList<Movie> results) {
     if (results.size() > 0) {
       // sort the results by title
-      sortResults(results);
+        sortResults(results);
 
       // now, display them all to the user
       for (int i = 0; i < results.size(); i++) {
@@ -344,10 +382,14 @@ public class MovieCollection {
   }
 
   private ArrayList<Movie> top50(String category) {
-    ArrayList<Movie> sortedMovies = switch (category) {
-      case "rating" -> sortMoviesbyRating(movies);
-      case "revenue" -> sortMoviesbyRevenue(movies);
-      default -> null;
-    };
+    ArrayList<Movie> results = new ArrayList<>();
+    switch (category) {
+      case "rating" -> sortMoviesByRating(movies);
+      case "revenue" -> sortMoviesByRevenue(movies);
+    }
+    for (int i = 0; i < 50; i++) {
+      results.add(movies.get(i));
+    }
+    return results;
   }
 }
